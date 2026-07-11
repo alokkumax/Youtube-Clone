@@ -8,9 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Simple test route to check if server is running
+// Root route
 app.get("/", (req, res) => {
-  res.send("YouTube Clone API is running");
+  res.send("YouTube Clone Backend Running...");
 });
 
 export default app;

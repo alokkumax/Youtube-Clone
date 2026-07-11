@@ -1,13 +1,17 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useOutletContext } from "react-router-dom";
 import { videos } from "../services/videos";
 import Comments from "../components/Comments";
 import "../styles/videoPlayer.css";
 
 function VideoPlayer() {
   const { id } = useParams();
+  const { uploadedVideos } = useOutletContext();
+
+  // Combine sample videos and uploaded videos
+  const allVideos = [...videos, ...uploadedVideos];
 
   // Find the video that matches the id from URL
-  const video = videos.find((item) => item.id === id);
+  const video = allVideos.find((item) => item.id === id);
 
   // Show message if video is not found
   if (!video) {

@@ -9,11 +9,13 @@
 .home-main {
   flex: 1;
   padding: 16px 24px;
+  min-width: 0;
 }
 
+/* Desktop - 4 columns */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-top: 16px;
 }
@@ -61,4 +63,35 @@
   padding: 40px;
   font-size: 18px;
   color: #606060;
+}
+
+/* Tablet - 2 columns */
+@media (max-width: 1024px) {
+  .video-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .home-main {
+    padding: 16px;
+  }
+}
+
+/* Mobile - 1 column */
+@media (max-width: 600px) {
+  .video-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-main {
+    padding: 12px;
+  }
+
+  .video-thumbnail {
+    height: 180px;
+  }
+
+  .no-videos {
+    padding: 24px;
+    font-size: 16px;
+  }
 }

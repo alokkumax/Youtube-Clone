@@ -92,3 +92,13 @@
   gap: 8px;
   flex-wrap: wrap;
 }
+
+@media (max-width: 480px) {
+  .add-comment {
+    flex-direction: column;
+  }
+
+  .comment-input {
+    width: 100%;
+  }
+}

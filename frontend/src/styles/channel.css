@@ -1,0 +1,208 @@
+.channel-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: #065fd4;
+  font-size: 14px;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.channel-banner {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.channel-info {
+  margin-bottom: 24px;
+}
+
+.channel-name {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.channel-description {
+  font-size: 14px;
+  color: #606060;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.channel-stats {
+  font-size: 14px;
+  color: #606060;
+  margin-bottom: 12px;
+}
+
+.upload-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #065fd4;
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.upload-link:hover {
+  background-color: #0550b3;
+}
+
+.channel-videos-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.no-channel-videos {
+  color: #606060;
+  font-size: 14px;
+}
+
+.channel-form-page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.channel-form-box {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.channel-form-box h1 {
+  margin-bottom: 16px;
+  font-size: 22px;
+}
+
+.upload-channel-name {
+  font-size: 14px;
+  color: #606060;
+  margin-bottom: 16px;
+}
+
+.channel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.channel-form label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.channel-form input,
+.channel-form textarea,
+.channel-form select {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.channel-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.channel-form-btn {
+  margin-top: 16px;
+  padding: 10px;
+  background-color: #065fd4;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.channel-form-btn:hover {
+  background-color: #0550b3;
+}
+
+.channel-video-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.video-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.edit-video-btn,
+.delete-video-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+.edit-video-btn {
+  background-color: #065fd4;
+}
+
+.edit-video-btn:hover {
+  background-color: #0550b3;
+}
+
+.delete-video-btn {
+  background-color: #cc0000;
+}
+
+.delete-video-btn:hover {
+  background-color: #990000;
+}
+
+/* Responsive styles for channel page */
+@media (max-width: 768px) {
+  .channel-page {
+    padding: 16px;
+  }
+
+  .channel-banner {
+    height: 120px;
+  }
+
+  .channel-name {
+    font-size: 20px;
+  }
+
+  .channel-form-page {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .channel-page {
+    padding: 12px;
+  }
+
+  .channel-banner {
+    height: 100px;
+  }
+
+  .channel-name {
+    font-size: 18px;
+  }
+
+  .channel-form-box {
+    padding: 16px;
+  }
+}

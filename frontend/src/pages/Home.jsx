@@ -7,8 +7,8 @@ import { videos } from "../services/videos";
 import "../styles/home.css";
 
 function Home() {
-  // State to show or hide sidebar
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Sidebar open on desktop, closed on mobile by default
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
 
   // State to track which filter button is selected
   const [activeFilter, setActiveFilter] = useState("All");
@@ -44,7 +44,11 @@ function Home() {
 
       <div className="home-body">
         {/* Show sidebar only when sidebarOpen is true */}
-        {sidebarOpen && <Sidebar />}
+        {sidebarOpen && (
+          <div className="sidebar-wrapper">
+            <Sidebar />
+          </div>
+        )}
 
         <main className="home-main">
           <FilterBar

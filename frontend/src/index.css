@@ -27,3 +27,13 @@ a {
 .simple-page a {
   color: #065fd4;
 }
+
+@media (max-width: 480px) {
+  .simple-page {
+    padding: 20px;
+  }
+
+  .simple-page h1 {
+    font-size: 20px;
+  }
+}

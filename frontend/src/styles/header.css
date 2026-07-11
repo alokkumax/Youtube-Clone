@@ -31,7 +31,7 @@
 }
 
 .logo-img {
-  height: 100px;
+  height: 40px;
   width: auto;
 }
 
@@ -48,6 +48,7 @@
   border: 1px solid #ccc;
   border-radius: 20px 0 0 20px;
   outline: none;
+  min-width: 0;
 }
 
 .search-btn {
@@ -70,6 +71,7 @@
   border-radius: 20px;
   color: #065fd4;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .sign-in-btn:hover {
@@ -80,6 +82,7 @@
   font-size: 14px;
   font-weight: bold;
   margin-right: 12px;
+  white-space: nowrap;
 }
 
 .logout-btn {
@@ -89,8 +92,61 @@
   background-color: #ffffff;
   cursor: pointer;
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .logout-btn:hover {
   background-color: #f2f2f2;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .header-center {
+    margin: 0 16px;
+  }
+
+  .search-btn {
+    padding: 8px 12px;
+  }
+
+  .logo-img {
+    height: 32px;
+  }
+
+  .welcome-text {
+    display: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .header {
+    padding: 0 8px;
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  .header-center {
+    margin: 0 8px;
+  }
+
+  .search-btn {
+    display: none;
+  }
+
+  .search-input {
+    border-radius: 20px;
+  }
+
+  .sign-in-btn,
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .logo-img {
+    height: 28px;
+  }
 }

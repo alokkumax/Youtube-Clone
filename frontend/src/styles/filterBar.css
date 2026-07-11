@@ -23,3 +23,15 @@
   background-color: #0f0f0f;
   color: #ffffff;
 }
+
+@media (max-width: 480px) {
+  .filter-bar {
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .filter-btn {
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+}

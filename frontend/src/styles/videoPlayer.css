@@ -35,6 +35,7 @@
 
 .player-stats {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   font-size: 14px;
   color: #606060;
@@ -54,4 +55,35 @@
   padding: 12px;
   background-color: #f2f2f2;
   border-radius: 8px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  .video-player-page {
+    padding: 16px;
+  }
+
+  .player-title {
+    font-size: 18px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .video-player-page {
+    padding: 12px;
+  }
+
+  .player-title {
+    font-size: 16px;
+  }
+
+  .player-stats {
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .player-channel {
+    font-size: 14px;
+  }
 }

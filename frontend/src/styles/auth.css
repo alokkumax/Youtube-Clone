@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: center;
   background-color: #f9f9f9;
+  padding: 16px;
 }
 
 .auth-box {
@@ -38,6 +39,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+  width: 100%;
 }
 
 .auth-btn {
@@ -68,4 +70,15 @@
 
 .auth-link a:hover {
   text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .auth-box {
+    padding: 20px;
+  }
+
+  .auth-box h1 {
+    font-size: 20px;
+  }
 }
