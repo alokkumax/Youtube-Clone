@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "../styles/header.css";
 
-function Header({ onMenuClick }) {
+function Header({ onMenuClick, searchQuery, onSearchChange }) {
   return (
     <header className="header">
       <div className="header-left">
@@ -23,6 +23,8 @@ function Header({ onMenuClick }) {
           type="text"
           className="search-input"
           placeholder="Search"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
         />
         <button className="search-btn">Search</button>
       </div>
