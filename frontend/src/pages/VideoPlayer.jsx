@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { videos } from "../services/videos";
+import Comments from "../components/Comments";
 import "../styles/videoPlayer.css";
 
 function VideoPlayer() {
@@ -41,6 +42,8 @@ function VideoPlayer() {
       <p className="player-channel">{video.channelName}</p>
 
       <p className="player-description">{video.description}</p>
+
+      <Comments />
     </div>
   );
 }

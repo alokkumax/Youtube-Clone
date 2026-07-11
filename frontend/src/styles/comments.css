@@ -1,0 +1,94 @@
+.comments-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.comments-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.add-comment {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.comment-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #065fd4;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.comment-btn:hover {
+  background-color: #0550b3;
+}
+
+.cancel-btn {
+  background-color: #606060;
+}
+
+.cancel-btn:hover {
+  background-color: #404040;
+}
+
+.delete-btn {
+  background-color: #cc0000;
+}
+
+.delete-btn:hover {
+  background-color: #990000;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.no-comments {
+  color: #606060;
+  font-size: 14px;
+}
+
+.comment-item {
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.comment-username {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.comment-text {
+  font-size: 14px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-comment {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
