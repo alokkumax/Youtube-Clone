@@ -1,7 +1,23 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getUser, logoutUser } from "../services/auth";
 import "../styles/header.css";
 
 function Header({ onMenuClick, searchQuery, onSearchChange }) {
+  const [user, setUser] = useState(null);
+
+  // Check if user is logged in when page loads
+  useEffect(() => {
+    const loggedInUser = getUser();
+    setUser(loggedInUser);
+  }, []);
+
+  // Handle logout button click
+  const handleLogout = () => {
+    logoutUser();
+    setUser(null);
+  };
+
   return (
     <header className="header">
       <div className="header-left">
@@ -30,9 +46,18 @@ function Header({ onMenuClick, searchQuery, onSearchChange }) {
       </div>
 
       <div className="header-right">
-        <Link to="/login" className="sign-in-btn">
-          Sign In
-        </Link>
+        {user ? (
+          <>
+            <span className="welcome-text">Welcome {user.username}</span>
+            <button className="logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <Link to="/login" className="sign-in-btn">
+            Sign In
+          </Link>
+        )}
       </div>
     </header>
   );

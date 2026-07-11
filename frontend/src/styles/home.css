@@ -23,6 +23,8 @@
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
+  display: block;
+  color: inherit;
 }
 
 .video-thumbnail {

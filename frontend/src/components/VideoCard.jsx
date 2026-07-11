@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
+
 // Reusable video card component
 function VideoCard({ video }) {
   return (
-    <div className="video-card">
+    <Link to={`/video/${video.id}`} className="video-card">
       <img
         className="video-thumbnail"
         src={video.thumbnail}
@@ -12,7 +14,7 @@ function VideoCard({ video }) {
         <p className="video-channel">{video.channelName}</p>
         <p className="video-views">{video.views}</p>
       </div>
-    </div>
+    </Link>
   );
 }
 
