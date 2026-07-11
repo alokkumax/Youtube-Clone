@@ -1,0 +1,77 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 56px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 100px;
+  width: auto;
+}
+
+.header-center {
+  display: flex;
+  flex: 1;
+  max-width: 600px;
+  margin: 0 40px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 20px 0 0 20px;
+  outline: none;
+}
+
+.search-btn {
+  padding: 8px 20px;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 20px 20px 0;
+  background-color: #f8f8f8;
+  cursor: pointer;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.sign-in-btn {
+  padding: 8px 16px;
+  border: 1px solid #065fd4;
+  border-radius: 20px;
+  color: #065fd4;
+  font-weight: bold;
+}
+
+.sign-in-btn:hover {
+  background-color: #e8f0fe;
+}

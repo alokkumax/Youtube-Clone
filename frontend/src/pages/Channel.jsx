@@ -1,7 +1,10 @@
+import { Link } from "react-router-dom";
+
 function Channel() {
   return (
-    <div>
-      {/* Channel page - will be built in later steps */}
+    <div className="simple-page">
+      <h1>Channel Page</h1>
+      <Link to="/">Back to Home</Link>
     </div>
   );
 }

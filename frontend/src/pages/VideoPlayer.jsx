@@ -1,7 +1,10 @@
+import { Link } from "react-router-dom";
+
 function VideoPlayer() {
   return (
-    <div>
-      {/* Video player page - will be built in later steps */}
+    <div className="simple-page">
+      <h1>Video Player Page</h1>
+      <Link to="/">Back to Home</Link>
     </div>
   );
 }

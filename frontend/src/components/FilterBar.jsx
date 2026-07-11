@@ -1,7 +1,20 @@
-function FilterBar() {
+import "../styles/filterBar.css";
+
+function FilterBar({ activeFilter, onFilterChange }) {
+  // List of category filter buttons
+  const filters = ["All", "Music", "Gaming", "News", "Coding", "Sports"];
+
   return (
-    <div>
-      {/* Filter bar component - will be built in later steps */}
+    <div className="filter-bar">
+      {filters.map((filter) => (
+        <button
+          key={filter}
+          className={`filter-btn ${activeFilter === filter ? "active" : ""}`}
+          onClick={() => onFilterChange(filter)}
+        >
+          {filter}
+        </button>
+      ))}
     </div>
   );
 }

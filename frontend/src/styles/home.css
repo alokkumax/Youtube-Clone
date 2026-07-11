@@ -1,0 +1,55 @@
+.home-page {
+  min-height: 100vh;
+}
+
+.home-body {
+  display: flex;
+}
+
+.home-main {
+  flex: 1;
+  padding: 16px 24px;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.video-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.video-thumbnail {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.video-info {
+  padding: 12px;
+}
+
+.video-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.video-channel {
+  font-size: 14px;
+  color: #606060;
+  margin-bottom: 4px;
+}
+
+.video-views {
+  font-size: 14px;
+  color: #606060;
+}

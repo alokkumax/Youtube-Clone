@@ -1,0 +1,18 @@
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background-color: #ffffff;
+  height: calc(100vh - 56px);
+  padding: 12px 0;
+  border-right: 1px solid #e5e5e5;
+}
+
+.sidebar-item {
+  padding: 10px 24px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.sidebar-item:hover {
+  background-color: #f2f2f2;
+}
