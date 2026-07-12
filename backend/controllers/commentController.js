@@ -58,7 +58,7 @@ export const updateComment = async (req, res) => {
     }
 
     // Only the owner can edit
-    if (comment.userId !== req.user.id) {
+    if (String(comment.userId) !== String(req.user.id)) {
       return res.status(403).json({ message: "Not allowed to edit this comment" });
     }
 
@@ -81,7 +81,7 @@ export const deleteComment = async (req, res) => {
     }
 
     // Only the owner can delete
-    if (comment.userId !== req.user.id) {
+    if (String(comment.userId) !== String(req.user.id)) {
       return res.status(403).json({ message: "Not allowed to delete this comment" });
     }
 

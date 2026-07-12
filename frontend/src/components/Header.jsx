@@ -12,17 +12,17 @@ function Header({ onMenuClick, searchQuery, onSearchChange }) {
     setUser(loggedInUser);
   }, []);
 
-  // Handle logout button click
+  // Handle logout - reload so sidebar updates too
   const handleLogout = () => {
     logoutUser();
-    setUser(null);
+    window.location.href = "/";
   };
 
   return (
     <header className="header">
       <div className="header-left">
         {/* Hamburger button to toggle sidebar */}
-        <button className="menu-btn" onClick={onMenuClick}>
+        <button className="menu-btn" onClick={onMenuClick} type="button">
           ☰
         </button>
         <Link to="/" className="logo">
@@ -41,15 +41,26 @@ function Header({ onMenuClick, searchQuery, onSearchChange }) {
           placeholder="Search"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              onSearchChange(searchQuery);
+            }
+          }}
         />
-        <button className="search-btn">Search</button>
+        <button
+          type="button"
+          className="search-btn"
+          onClick={() => onSearchChange(searchQuery)}
+        >
+          Search
+        </button>
       </div>
 
       <div className="header-right">
         {user ? (
           <>
             <span className="welcome-text">Welcome {user.username}</span>
-            <button className="logout-btn" onClick={handleLogout}>
+            <button className="logout-btn" onClick={handleLogout} type="button">
               Logout
             </button>
           </>

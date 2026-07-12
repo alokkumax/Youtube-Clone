@@ -12,7 +12,30 @@ function Register() {
   const [success, setSuccess] = useState("");
 
   // Register using backend API
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    // Simple validation
+    if (!username.trim() || !email.trim() || !password.trim()) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    if (username.trim().length < 3) {
+      setError("Username must be at least 3 characters");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       setError("");
       setSuccess("");
@@ -34,7 +57,7 @@ function Register() {
         {error && <p className="auth-error">{error}</p>}
         {success && <p className="auth-success">{success}</p>}
 
-        <form className="auth-form">
+        <form className="auth-form" onSubmit={handleRegister}>
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -62,7 +85,7 @@ function Register() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="button" className="auth-btn" onClick={handleRegister}>
+          <button type="submit" className="auth-btn">
             Register
           </button>
         </form>

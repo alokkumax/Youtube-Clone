@@ -41,6 +41,11 @@ export const getMyChannels = async (req, res) => {
 // Get channel by id with videos and owner info
 export const getChannelById = async (req, res) => {
   try {
+    // Check for invalid id
+    if (!req.params.id || req.params.id.length < 12) {
+      return res.status(404).json({ message: "Channel not found" });
+    }
+
     const channel = await Channel.findById(req.params.id);
 
     if (!channel) {
@@ -59,6 +64,10 @@ export const getChannelById = async (req, res) => {
       owner,
     });
   } catch (error) {
+    // Invalid MongoDB id format
+    if (error.name === "CastError") {
+      return res.status(404).json({ message: "Channel not found" });
+    }
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

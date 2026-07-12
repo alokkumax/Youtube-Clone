@@ -1,5 +1,11 @@
+import mongoose from "mongoose";
 import Video from "../models/Video.js";
 import Channel from "../models/Channel.js";
+
+// Helper to check if id is valid MongoDB id
+const isValidId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
 
 // Get all videos (supports search and category filter)
 export const getAllVideos = async (req, res) => {
@@ -29,6 +35,10 @@ export const getAllVideos = async (req, res) => {
 // Get one video by id
 export const getVideoById = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
     const video = await Video.findById(req.params.id);
 
     if (!video) {
@@ -58,10 +68,19 @@ export const createVideo = async (req, res) => {
         .json({ message: "Title, video URL and channel ID are required" });
     }
 
+    if (!isValidId(channelId)) {
+      return res.status(404).json({ message: "Channel not found" });
+    }
+
     // Check if channel exists
     const channel = await Channel.findById(channelId);
     if (!channel) {
       return res.status(404).json({ message: "Channel not found" });
+    }
+
+    // Only channel owner can upload
+    if (String(channel.owner) !== String(req.user.id)) {
+      return res.status(403).json({ message: "Not allowed to upload to this channel" });
     }
 
     // Create video
@@ -92,10 +111,20 @@ export const updateVideo = async (req, res) => {
   try {
     const { title, description, thumbnailUrl, videoUrl, category } = req.body;
 
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
     const video = await Video.findById(req.params.id);
 
     if (!video) {
       return res.status(404).json({ message: "Video not found" });
+    }
+
+    // Check channel ownership
+    const channel = await Channel.findById(video.channelId);
+    if (!channel || String(channel.owner) !== String(req.user.id)) {
+      return res.status(403).json({ message: "Not allowed to edit this video" });
     }
 
     // Update fields if provided
@@ -126,15 +155,24 @@ export const updateVideo = async (req, res) => {
 // Delete a video (JWT required)
 export const deleteVideo = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
     const video = await Video.findById(req.params.id);
 
     if (!video) {
       return res.status(404).json({ message: "Video not found" });
     }
 
-    // Decrease channel video count
+    // Check channel ownership
     const channel = await Channel.findById(video.channelId);
-    if (channel && channel.videoCount > 0) {
+    if (!channel || String(channel.owner) !== String(req.user.id)) {
+      return res.status(403).json({ message: "Not allowed to delete this video" });
+    }
+
+    // Decrease channel video count
+    if (channel.videoCount > 0) {
       channel.videoCount = channel.videoCount - 1;
       await channel.save();
     }
@@ -150,6 +188,10 @@ export const deleteVideo = async (req, res) => {
 // Like a video
 export const likeVideo = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
     const video = await Video.findById(req.params.id);
 
     if (!video) {
@@ -168,6 +210,10 @@ export const likeVideo = async (req, res) => {
 // Dislike a video
 export const dislikeVideo = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
     const video = await Video.findById(req.params.id);
 
     if (!video) {

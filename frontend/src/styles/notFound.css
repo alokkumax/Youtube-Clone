@@ -1,0 +1,33 @@
+.not-found-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #0f0f0f;
+  color: #ffffff;
+  text-align: center;
+  padding: 24px;
+}
+
+.not-found-page h1 {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.not-found-page p {
+  color: #aaaaaa;
+  margin-bottom: 24px;
+}
+
+.not-found-btn {
+  padding: 10px 20px;
+  background-color: #ff0000;
+  color: #ffffff;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.not-found-btn:hover {
+  background-color: #cc0000;
+}

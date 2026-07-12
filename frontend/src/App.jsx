@@ -42,11 +42,12 @@ const router = createBrowserRouter([
         path: "/upload-video/:channelId",
         element: <UploadVideo />,
       },
-      {
-        path: "*",
-        element: <NotFound />,
-      },
     ],
+  },
+  {
+    // 404 without Header and Sidebar
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

@@ -9,7 +9,7 @@ function Sidebar() {
   const location = useLocation();
   const [myChannels, setMyChannels] = useState([]);
 
-  // Load my channels when page changes (so new channels show up)
+  // Load my channels when page changes
   useEffect(() => {
     const loadMyChannels = async () => {
       const user = getUser();
@@ -35,7 +35,7 @@ function Sidebar() {
         Home
       </Link>
 
-      {/* Show user's channels so they can open them again */}
+      {/* Show user's channels */}
       {loggedInUser && myChannels.length > 0 && (
         <>
           <p className="sidebar-section">My Channels</p>
@@ -51,11 +51,14 @@ function Sidebar() {
         </>
       )}
 
-      {/* Show Create Channel only if user has no channel yet */}
+      {/* Show create channel message if logged in with no channel */}
       {loggedInUser && myChannels.length === 0 && (
-        <Link to="/create-channel" className="sidebar-item">
-          Create Channel
-        </Link>
+        <>
+          <p className="sidebar-empty">Create your first channel.</p>
+          <Link to="/create-channel" className="sidebar-item">
+            Create Channel
+          </Link>
+        </>
       )}
 
       {!loggedInUser && (

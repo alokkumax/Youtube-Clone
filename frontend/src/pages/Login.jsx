@@ -10,7 +10,25 @@ function Login() {
   const [error, setError] = useState("");
 
   // Login using backend API
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    // Simple validation
+    if (!email.trim() || !password.trim()) {
+      setError("Please fill all fields");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setError("Please enter a valid email");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       setError("");
       const data = await loginUser(email, password);
@@ -38,7 +56,7 @@ function Login() {
 
         {error && <p className="auth-error">{error}</p>}
 
-        <form className="auth-form">
+        <form className="auth-form" onSubmit={handleLogin}>
           <label htmlFor="email">Email</label>
           <input
             type="email"
@@ -57,7 +75,7 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="button" className="auth-btn" onClick={handleLogin}>
+          <button type="submit" className="auth-btn">
             Login
           </button>
         </form>

@@ -11,6 +11,7 @@ function UploadVideo() {
   const loggedInUser = getUser();
 
   const [channel, setChannel] = useState(null);
+  const [owner, setOwner] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Coding");
@@ -25,6 +26,7 @@ function UploadVideo() {
       try {
         const data = await getChannelById(channelId);
         setChannel(data.channel);
+        setOwner(data.owner);
       } catch (err) {
         setError("Channel not found");
       } finally {
@@ -56,6 +58,16 @@ function UploadVideo() {
     return (
       <div className="simple-page">
         <h1>Channel not found</h1>
+        <Link to="/">Back to Home</Link>
+      </div>
+    );
+  }
+
+  // Only channel owner can upload
+  if (!owner || String(loggedInUser.userId) !== String(owner._id)) {
+    return (
+      <div className="simple-page">
+        <p>You can only upload videos to your own channel.</p>
         <Link to="/">Back to Home</Link>
       </div>
     );

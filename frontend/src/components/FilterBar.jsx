@@ -2,7 +2,7 @@ import "../styles/filterBar.css";
 
 function FilterBar({ activeFilter, onFilterChange }) {
   // List of category filter buttons
-  const filters = ["All", "Music", "Gaming", "News", "Coding", "Sports"];
+  const filters = ["All", "Music", "Gaming", "News", "Coding", "Sports", "Education"];
 
   return (
     <div className="filter-bar">

@@ -121,7 +121,7 @@ function Comments({ videoId }) {
       {/* Comments list */}
       <div className="comments-list">
         {comments.length === 0 ? (
-          <p className="no-comments">No comments yet.</p>
+          <p className="no-comments">Be the first to comment.</p>
         ) : (
           comments.map((comment) => (
             <div key={comment._id} className="comment-item">
