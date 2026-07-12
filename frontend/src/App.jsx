@@ -7,6 +7,7 @@ import VideoPlayer from "./pages/VideoPlayer";
 import Channel from "./pages/Channel";
 import CreateChannel from "./pages/CreateChannel";
 import UploadVideo from "./pages/UploadVideo";
+import Subscriptions from "./pages/Subscriptions";
 import NotFound from "./pages/NotFound";
 
 // Setup all routes for the app
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/upload-video/:channelId",
         element: <UploadVideo />,
+      },
+      {
+        path: "/subscriptions",
+        element: <Subscriptions />,
       },
     ],
   },

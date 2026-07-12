@@ -98,24 +98,55 @@ function Comments({ videoId }) {
     setEditText("");
   };
 
+  const userLetter = loggedInUser
+    ? loggedInUser.username.charAt(0).toUpperCase()
+    : "?";
+
   return (
     <div className="comments-section">
-      <h2 className="comments-title">Comments</h2>
-
-      {/* Add new comment */}
-      <div className="add-comment">
-        <input
-          type="text"
-          className="comment-input"
-          placeholder={
-            loggedInUser ? "Add a comment..." : "Login to add a comment"
-          }
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
-        <button className="comment-btn" onClick={handleAddComment}>
-          Add Comment
+      {/* Comment count header like YouTube */}
+      <div className="comments-header">
+        <h2 className="comments-title">{comments.length} Comments</h2>
+        <button type="button" className="sort-btn">
+          ⇅ Sort by
         </button>
+      </div>
+
+      {/* Add comment row with avatar */}
+      <div className="add-comment">
+        <div className="comment-avatar">{userLetter}</div>
+        <div className="add-comment-right">
+          <input
+            type="text"
+            className="comment-input"
+            placeholder={
+              loggedInUser ? "Add a comment..." : "Login to add a comment"
+            }
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleAddComment();
+              }
+            }}
+          />
+          <div className="add-comment-actions">
+            <button
+              type="button"
+              className="comment-cancel"
+              onClick={() => setNewComment("")}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="comment-btn"
+              onClick={handleAddComment}
+            >
+              Comment
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Comments list */}
@@ -125,51 +156,81 @@ function Comments({ videoId }) {
         ) : (
           comments.map((comment) => (
             <div key={comment._id} className="comment-item">
-              {editingId === comment._id ? (
-                <div className="edit-comment">
-                  <input
-                    type="text"
-                    className="comment-input"
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                  />
-                  <button
-                    className="comment-btn"
-                    onClick={() => handleSaveEdit(comment._id)}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="comment-btn cancel-btn"
-                    onClick={handleCancelEdit}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <p className="comment-username">{comment.username}</p>
-                  <p className="comment-text">{comment.text}</p>
-                  {/* Show edit/delete only for own comments */}
-                  {loggedInUser &&
-                    String(loggedInUser.userId) === String(comment.userId) && (
-                      <div className="comment-actions">
-                        <button
-                          className="comment-btn"
-                          onClick={() => handleStartEdit(comment)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="comment-btn delete-btn"
-                          onClick={() => handleDelete(comment._id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                </>
-              )}
+              <div className="comment-avatar">
+                {comment.username
+                  ? comment.username.charAt(0).toUpperCase()
+                  : "?"}
+              </div>
+
+              <div className="comment-body">
+                {editingId === comment._id ? (
+                  <div className="edit-comment">
+                    <input
+                      type="text"
+                      className="comment-input"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                    />
+                    <div className="add-comment-actions">
+                      <button
+                        type="button"
+                        className="comment-cancel"
+                        onClick={handleCancelEdit}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="comment-btn"
+                        onClick={() => handleSaveEdit(comment._id)}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="comment-username">
+                      @{comment.username}
+                      <span className="comment-time"> · just now</span>
+                    </p>
+                    <p className="comment-text">{comment.text}</p>
+
+                    <div className="comment-actions">
+                      <button type="button" className="comment-icon-btn">
+                        👍
+                      </button>
+                      <button type="button" className="comment-icon-btn">
+                        👎
+                      </button>
+                      <button type="button" className="comment-reply-btn">
+                        Reply
+                      </button>
+
+                      {loggedInUser &&
+                        String(loggedInUser.userId) ===
+                          String(comment.userId) && (
+                          <>
+                            <button
+                              type="button"
+                              className="comment-reply-btn"
+                              onClick={() => handleStartEdit(comment)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="comment-reply-btn delete-text"
+                              onClick={() => handleDelete(comment._id)}
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           ))
         )}

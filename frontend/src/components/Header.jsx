@@ -18,16 +18,19 @@ function Header({ onMenuClick, searchQuery, onSearchChange }) {
     window.location.href = "/";
   };
 
+  // First letter of username for avatar
+  const avatarLetter = user ? user.username.charAt(0).toUpperCase() : "";
+
   return (
     <header className="header">
       <div className="header-left">
-        {/* Hamburger button to toggle sidebar */}
+        {/* Hamburger button to open sidebar drawer */}
         <button className="menu-btn" onClick={onMenuClick} type="button">
           ☰
         </button>
         <Link to="/" className="logo">
           <img
-            src="/youtube-logo-icon.png"
+            src="/yt_logo_fullcolor_white_digital.png"
             alt="YouTube"
             className="logo-img"
           />
@@ -35,31 +38,39 @@ function Header({ onMenuClick, searchQuery, onSearchChange }) {
       </div>
 
       <div className="header-center">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              onSearchChange(searchQuery);
-            }
-          }}
-        />
-        <button
-          type="button"
-          className="search-btn"
-          onClick={() => onSearchChange(searchQuery)}
-        >
-          Search
-        </button>
+        <div className="search-box">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                onSearchChange(searchQuery);
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="search-btn"
+            onClick={() => onSearchChange(searchQuery)}
+          >
+            🔍
+          </button>
+        </div>
       </div>
 
       <div className="header-right">
         {user ? (
           <>
-            <span className="welcome-text">Welcome {user.username}</span>
+            <Link to="/create-channel" className="create-btn">
+              + Create
+            </Link>
+            <span className="welcome-text">{user.username}</span>
+            <div className="user-avatar" title={user.username}>
+              {avatarLetter}
+            </div>
             <button className="logout-btn" onClick={handleLogout} type="button">
               Logout
             </button>

@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  // List of channel IDs this user subscribed to
+  subscriptions: {
+    type: [String],
+    default: [],
+  },
 });
 
 const User = mongoose.model("User", userSchema);

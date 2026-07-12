@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { getUser } from "../services/auth";
-import { getChannelById } from "../services/channels";
+import {
+  getChannelById,
+  checkSubscription,
+  subscribeChannel,
+  unsubscribeChannel,
+} from "../services/channels";
 import { updateVideo, deleteVideo } from "../services/videos";
 import VideoCard from "../components/VideoCard";
 import "../styles/channel.css";
@@ -9,6 +14,7 @@ import "../styles/home.css";
 
 function Channel() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const loggedInUser = getUser();
 
   const [channel, setChannel] = useState(null);
@@ -16,15 +22,28 @@ function Channel() {
   const [owner, setOwner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subLoading, setSubLoading] = useState(false);
 
   // Load channel from backend
   const loadChannel = async () => {
     try {
       setLoading(true);
+      setIsSubscribed(false);
       const data = await getChannelById(id);
       setChannel(data.channel);
       setVideos(data.videos);
       setOwner(data.owner);
+
+      // Keep subscribe button correct after refresh
+      if (getUser()) {
+        try {
+          const result = await checkSubscription(id);
+          setIsSubscribed(result.subscribed);
+        } catch (err) {
+          setIsSubscribed(false);
+        }
+      }
     } catch (err) {
       setError("Channel not found");
     } finally {
@@ -74,6 +93,40 @@ function Channel() {
   const isOwner =
     loggedInUser && owner && String(loggedInUser.userId) === String(owner._id);
 
+  // Toggle subscribe and keep it saved on the server
+  const handleSubscribe = async () => {
+    if (!getUser()) {
+      navigate("/login");
+      return;
+    }
+
+    if (subLoading || isOwner) {
+      return;
+    }
+
+    try {
+      setSubLoading(true);
+
+      if (isSubscribed) {
+        const result = await unsubscribeChannel(id);
+        setIsSubscribed(false);
+        setChannel((prev) =>
+          prev ? { ...prev, subscribers: result.subscribers } : prev
+        );
+      } else {
+        const result = await subscribeChannel(id);
+        setIsSubscribed(true);
+        setChannel((prev) =>
+          prev ? { ...prev, subscribers: result.subscribers } : prev
+        );
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Could not update subscription");
+    } finally {
+      setSubLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="simple-page">
@@ -109,12 +162,25 @@ function Channel() {
           videos
         </p>
 
-        {/* Show upload link if user owns the channel */}
-        {isOwner && (
-          <Link to={`/upload-video/${id}`} className="upload-link">
-            Upload Video
-          </Link>
-        )}
+        <div className="channel-actions">
+          {!isOwner && (
+            <button
+              type="button"
+              className={`subscribe-btn ${isSubscribed ? "subscribed" : ""}`}
+              onClick={handleSubscribe}
+              disabled={subLoading}
+            >
+              {isSubscribed ? "Subscribed" : "Subscribe"}
+            </button>
+          )}
+
+          {/* Show upload link if user owns the channel */}
+          {isOwner && (
+            <Link to={`/upload-video/${id}`} className="upload-link">
+              Upload Video
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Videos belonging to this channel */}

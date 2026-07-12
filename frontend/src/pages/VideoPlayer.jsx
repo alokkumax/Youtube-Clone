@@ -1,15 +1,29 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getVideoById, likeVideo, dislikeVideo } from "../services/videos";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { getVideoById, likeVideo, dislikeVideo, getVideos } from "../services/videos";
+import { getUser } from "../services/auth";
+import {
+  checkSubscription,
+  subscribeChannel,
+  unsubscribeChannel,
+} from "../services/channels";
 import Comments from "../components/Comments";
 import "../styles/videoPlayer.css";
 
 function VideoPlayer() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [playError, setPlayError] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeChip, setActiveChip] = useState("All");
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subLoading, setSubLoading] = useState(false);
+
+  // Category chips for right side
+  const chips = ["All", "Music", "Gaming", "News", "Coding", "Sports", "Education"];
 
   // Load video from backend
   useEffect(() => {
@@ -17,8 +31,19 @@ function VideoPlayer() {
       try {
         setLoading(true);
         setPlayError(false);
+        setIsSubscribed(false);
         const data = await getVideoById(id);
         setVideo(data);
+
+        // Check if user already subscribed (stays after refresh)
+        if (getUser() && data.channelId) {
+          try {
+            const result = await checkSubscription(data.channelId);
+            setIsSubscribed(result.subscribed);
+          } catch (err) {
+            setIsSubscribed(false);
+          }
+        }
       } catch (err) {
         setError("Video not found");
       } finally {
@@ -28,6 +53,22 @@ function VideoPlayer() {
 
     loadVideo();
   }, [id]);
+
+  // Load suggested videos for right sidebar
+  useEffect(() => {
+    const loadSuggestions = async () => {
+      try {
+        const data = await getVideos("", activeChip);
+        // Remove current video from suggestions
+        const filtered = data.filter((item) => item._id !== id);
+        setSuggestions(filtered);
+      } catch (err) {
+        setSuggestions([]);
+      }
+    };
+
+    loadSuggestions();
+  }, [id, activeChip]);
 
   // Handle like button
   const handleLike = async () => {
@@ -46,6 +87,34 @@ function VideoPlayer() {
       setVideo(updated);
     } catch (err) {
       // Ignore dislike errors for now
+    }
+  };
+
+  // Toggle subscribe / unsubscribe and keep button state
+  const handleSubscribe = async () => {
+    if (!getUser()) {
+      navigate("/login");
+      return;
+    }
+
+    if (!video?.channelId || subLoading) {
+      return;
+    }
+
+    try {
+      setSubLoading(true);
+
+      if (isSubscribed) {
+        await unsubscribeChannel(video.channelId);
+        setIsSubscribed(false);
+      } else {
+        await subscribeChannel(video.channelId);
+        setIsSubscribed(true);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Could not update subscription");
+    } finally {
+      setSubLoading(false);
     }
   };
 
@@ -86,79 +155,147 @@ function VideoPlayer() {
   }
 
   const youtubeEmbed = getYoutubeEmbedUrl(video.videoUrl);
+  const channelLetter = video.channelName
+    ? video.channelName.charAt(0).toUpperCase()
+    : "?";
 
   return (
-    <div className="video-player-page">
-      <div className="player-container">
-        {!video.videoUrl && (
-          <p className="player-error">No video URL provided.</p>
-        )}
+    <div className="watch-page">
+      {/* Left side - player and details */}
+      <div className="watch-main">
+        <div className="player-container">
+          {!video.videoUrl && (
+            <p className="player-error">No video URL provided.</p>
+          )}
 
-        {/* YouTube videos use iframe */}
-        {youtubeEmbed && (
-          <iframe
-            className="player-video player-iframe"
-            src={youtubeEmbed}
-            title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        )}
+          {youtubeEmbed && (
+            <iframe
+              className="player-video player-iframe"
+              src={youtubeEmbed}
+              title={video.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          )}
 
-        {/* Normal MP4 videos use video tag */}
-        {video.videoUrl && !youtubeEmbed && (
-          <video
-            key={video._id + video.videoUrl}
-            controls
-            playsInline
-            preload="metadata"
-            className="player-video"
-            src={video.videoUrl}
-            onError={() => setPlayError(true)}
-          >
-            Your browser does not support the video tag.
-          </video>
-        )}
+          {video.videoUrl && !youtubeEmbed && (
+            <video
+              key={video._id + video.videoUrl}
+              controls
+              playsInline
+              preload="metadata"
+              className="player-video"
+              src={video.videoUrl}
+              onError={() => setPlayError(true)}
+            >
+              Your browser does not support the video tag.
+            </video>
+          )}
 
-        {playError && (
-          <p className="player-error">
-            Could not play this video. Try using a local file like
-            /videos/sample1.mp4 or a YouTube link.
+          {playError && (
+            <p className="player-error">
+              Could not play this video. Try /videos/sample1.mp4 or a YouTube
+              link.
+            </p>
+          )}
+        </div>
+
+        <h1 className="player-title">{video.title}</h1>
+
+        {/* Channel row + like dislike pills */}
+        <div className="watch-actions-row">
+          <div className="watch-channel-block">
+            <div className="channel-avatar-circle">{channelLetter}</div>
+            <div>
+              {video.channelId ? (
+                <Link
+                  to={`/channel/${video.channelId}`}
+                  className="player-channel"
+                >
+                  {video.channelName}
+                </Link>
+              ) : (
+                <p className="player-channel">{video.channelName}</p>
+              )}
+              <p className="channel-sub-text">{video.views} views</p>
+            </div>
+            <button
+              type="button"
+              className={`subscribe-btn ${isSubscribed ? "subscribed" : ""}`}
+              onClick={handleSubscribe}
+              disabled={subLoading}
+            >
+              {isSubscribed ? "Subscribed" : "Subscribe"}
+            </button>
+          </div>
+
+          <div className="like-dislike-group">
+            <button className="pill-btn" onClick={handleLike} type="button">
+              👍 {video.likes}
+            </button>
+            <button className="pill-btn" onClick={handleDislike} type="button">
+              👎 {video.dislikes}
+            </button>
+            <button className="pill-btn" type="button">
+              Share
+            </button>
+            <button className="pill-btn" type="button">
+              Save
+            </button>
+          </div>
+        </div>
+
+        {/* Description box */}
+        <div className="description-box">
+          <p className="description-meta">
+            {video.views} views · {video.category}
           </p>
-        )}
+          <p className="player-description-text">{video.description}</p>
+        </div>
+
+        <Comments videoId={id} />
       </div>
 
-      <h1 className="player-title">{video.title}</h1>
+      {/* Right side - category chips + suggested videos */}
+      <aside className="watch-sidebar">
+        <div className="suggest-chips">
+          {chips.map((chip) => (
+            <button
+              key={chip}
+              type="button"
+              className={`suggest-chip ${activeChip === chip ? "active" : ""}`}
+              onClick={() => setActiveChip(chip)}
+            >
+              {chip}
+            </button>
+          ))}
+        </div>
 
-      <div className="player-stats">
-        <span>{video.views} views</span>
-        <span>{video.likes} likes</span>
-        <span>{video.dislikes} dislikes</span>
-      </div>
-
-      {/* Like and Dislike buttons */}
-      <div className="like-dislike-btns">
-        <button className="like-btn" onClick={handleLike}>
-          Like
-        </button>
-        <button className="dislike-btn" onClick={handleDislike}>
-          Dislike
-        </button>
-      </div>
-
-      {video.channelId && (
-        <Link to={`/channel/${video.channelId}`} className="player-channel">
-          {video.channelName}
-        </Link>
-      )}
-
-      {!video.channelId && (
-        <p className="player-channel">{video.channelName}</p>
-      )}
-
-      <p className="player-description">{video.description}</p>
-
-      <Comments videoId={id} />
+        <div className="suggest-list">
+          {suggestions.length === 0 ? (
+            <p className="suggest-empty">No suggestions.</p>
+          ) : (
+            suggestions.map((item) => (
+              <Link
+                key={item._id}
+                to={`/video/${item._id}`}
+                className="suggest-item"
+              >
+                <img
+                  className="suggest-thumb"
+                  src={item.thumbnailUrl || "https://picsum.photos/168/94"}
+                  alt={item.title}
+                />
+                <div className="suggest-info">
+                  <h4 className="suggest-title">{item.title}</h4>
+                  <p className="suggest-meta">{item.channelName}</p>
+                  <p className="suggest-meta">{item.views} views</p>
+                </div>
+              </Link>
+            ))
+          )}
+        </div>
+      </aside>
     </div>
   );
 }
