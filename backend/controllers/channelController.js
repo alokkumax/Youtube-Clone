@@ -28,6 +28,16 @@ export const createChannel = async (req, res) => {
   }
 };
 
+// Get channels of the logged in user
+export const getMyChannels = async (req, res) => {
+  try {
+    const channels = await Channel.find({ owner: req.user.id });
+    res.status(200).json(channels);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
 // Get channel by id with videos and owner info
 export const getChannelById = async (req, res) => {
   try {

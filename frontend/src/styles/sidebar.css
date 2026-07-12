@@ -2,7 +2,7 @@
   width: 240px;
   min-width: 240px;
   background-color: #ffffff;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 72px);
   padding: 12px 0;
   border-right: 1px solid #e5e5e5;
 }
@@ -19,14 +19,22 @@
   background-color: #f2f2f2;
 }
 
+.sidebar-section {
+  padding: 16px 24px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #606060;
+  text-transform: uppercase;
+}
+
 /* On mobile, sidebar becomes an overlay */
 @media (max-width: 768px) {
   .sidebar-wrapper {
     position: fixed;
-    top: 56px;
+    top: 72px;
     left: 0;
     z-index: 90;
-    height: calc(100vh - 56px);
+    height: calc(100vh - 72px);
   }
 
   .sidebar {

@@ -1,147 +1,53 @@
-// Sample video data for the assignment
-export const videos = [
-  {
-    id: "1",
-    title: "Learn React in 30 Minutes",
-    thumbnail: "https://picsum.photos/320/180?random=1",
-    channelName: "Code Academy",
-    views: "1.2M views",
-    category: "Coding",
-    description: "A quick beginner-friendly guide to learning React basics in 30 minutes.",
-    likes: "45K",
-    dislikes: "200",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-  },
-  {
-    id: "2",
-    title: "Top 10 Gaming Moments 2024",
-    thumbnail: "https://picsum.photos/320/180?random=2",
-    channelName: "Game Zone",
-    views: "850K views",
-    category: "Gaming",
-    description: "Watch the most exciting gaming moments from 2024 in this compilation.",
-    likes: "32K",
-    dislikes: "150",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-  },
-  {
-    id: "3",
-    title: "Relaxing Music for Study",
-    thumbnail: "https://picsum.photos/320/180?random=3",
-    channelName: "Chill Beats",
-    views: "3.5M views",
-    category: "Music",
-    description: "Calm and relaxing music to help you focus while studying.",
-    likes: "120K",
-    dislikes: "500",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-  },
-  {
-    id: "4",
-    title: "Breaking News Today",
-    thumbnail: "https://picsum.photos/320/180?random=4",
-    channelName: "Daily News",
-    views: "500K views",
-    category: "News",
-    description: "Latest breaking news and top stories from around the world today.",
-    likes: "8K",
-    dislikes: "300",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-  },
-  {
-    id: "5",
-    title: "Football Highlights - Best Goals",
-    thumbnail: "https://picsum.photos/320/180?random=5",
-    channelName: "Sports Hub",
-    views: "2.1M views",
-    category: "Sports",
-    description: "The best football goals from recent matches in one highlight reel.",
-    likes: "78K",
-    dislikes: "400",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-  },
-  {
-    id: "6",
-    title: "JavaScript Basics for Beginners",
-    thumbnail: "https://picsum.photos/320/180?random=6",
-    channelName: "Dev Tutorials",
-    views: "920K views",
-    category: "Coding",
-    description: "Learn JavaScript from scratch with simple examples for beginners.",
-    likes: "40K",
-    dislikes: "180",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-  },
-  {
-    id: "7",
-    title: "Epic Battle Royale Gameplay",
-    thumbnail: "https://picsum.photos/320/180?random=7",
-    channelName: "Pro Gamer",
-    views: "1.8M views",
-    category: "Gaming",
-    description: "Full battle royale gameplay with epic wins and close calls.",
-    likes: "65K",
-    dislikes: "220",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
-  },
-  {
-    id: "8",
-    title: "Morning News Roundup",
-    thumbnail: "https://picsum.photos/320/180?random=8",
-    channelName: "World Today",
-    views: "320K views",
-    category: "News",
-    description: "Your morning news roundup covering politics, business, and world events.",
-    likes: "5K",
-    dislikes: "100",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-  },
-  {
-    id: "9",
-    title: "Best Workout Music Mix",
-    thumbnail: "https://picsum.photos/320/180?random=9",
-    channelName: "Fitness Beats",
-    views: "1.5M views",
-    category: "Music",
-    description: "High energy music mix to keep you motivated during your workout.",
-    likes: "55K",
-    dislikes: "250",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-  },
-  {
-    id: "10",
-    title: "Cricket Match Highlights",
-    thumbnail: "https://picsum.photos/320/180?random=10",
-    channelName: "Sports Live",
-    views: "4.2M views",
-    category: "Sports",
-    description: "Full cricket match highlights with the best batting and bowling moments.",
-    likes: "150K",
-    dislikes: "600",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-  },
-  {
-    id: "11",
-    title: "Build a Todo App with React",
-    thumbnail: "https://picsum.photos/320/180?random=11",
-    channelName: "React Masters",
-    views: "650K views",
-    category: "Coding",
-    description: "Step by step tutorial to build a todo app using React.",
-    likes: "28K",
-    dislikes: "120",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/VolkswagenGTIReview.mp4",
-  },
-  {
-    id: "12",
-    title: "Acoustic Guitar Covers",
-    thumbnail: "https://picsum.photos/320/180?random=12",
-    channelName: "Music Lounge",
-    views: "780K views",
-    category: "Music",
-    description: "Beautiful acoustic guitar covers of popular songs.",
-    likes: "35K",
-    dislikes: "90",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-  },
-];
+import api from "./api";
+
+// Get all videos (with optional search and category)
+export async function getVideos(search = "", category = "All") {
+  const params = {};
+
+  if (search && search.trim() !== "") {
+    params.search = search;
+  }
+
+  if (category && category !== "All") {
+    params.category = category;
+  }
+
+  const response = await api.get("/videos", { params });
+  return response.data;
+}
+
+// Get one video by id
+export async function getVideoById(id) {
+  const response = await api.get(`/videos/${id}`);
+  return response.data;
+}
+
+// Create a new video
+export async function createVideo(videoData) {
+  const response = await api.post("/videos", videoData);
+  return response.data;
+}
+
+// Update a video
+export async function updateVideo(id, videoData) {
+  const response = await api.put(`/videos/${id}`, videoData);
+  return response.data;
+}
+
+// Delete a video
+export async function deleteVideo(id) {
+  const response = await api.delete(`/videos/${id}`);
+  return response.data;
+}
+
+// Like a video
+export async function likeVideo(id) {
+  const response = await api.put(`/videos/${id}/like`);
+  return response.data;
+}
+
+// Dislike a video
+export async function dislikeVideo(id) {
+  const response = await api.put(`/videos/${id}/dislike`);
+  return response.data;
+}

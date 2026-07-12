@@ -1,69 +1,95 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getUser } from "../services/auth";
+import {
+  getComments,
+  addComment,
+  updateComment,
+  deleteComment,
+} from "../services/comments";
 import "../styles/comments.css";
 
-function Comments() {
-  // Store all comments in state
+function Comments({ videoId }) {
   const [comments, setComments] = useState([]);
-
-  // Text for new comment input
   const [newComment, setNewComment] = useState("");
-
-  // Track which comment is being edited
   const [editingId, setEditingId] = useState(null);
-
-  // Text for edit input
   const [editText, setEditText] = useState("");
+  const loggedInUser = getUser();
+
+  // Load comments from backend
+  useEffect(() => {
+    const loadComments = async () => {
+      try {
+        const data = await getComments(videoId);
+        setComments(data);
+      } catch (error) {
+        setComments([]);
+      }
+    };
+
+    if (videoId) {
+      loadComments();
+    }
+  }, [videoId]);
 
   // Add a new comment
-  const handleAddComment = () => {
+  const handleAddComment = async () => {
     if (newComment.trim() === "") {
       return;
     }
 
-    const loggedInUser = getUser();
-    const username = loggedInUser ? loggedInUser.username : "Guest";
+    if (!loggedInUser) {
+      alert("Please login to comment");
+      return;
+    }
 
-    const comment = {
-      id: Date.now().toString(),
-      username: username,
-      text: newComment,
-    };
-
-    setComments([...comments, comment]);
-    setNewComment("");
+    try {
+      const comment = await addComment(videoId, newComment);
+      setComments([comment, ...comments]);
+      setNewComment("");
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to add comment");
+    }
   };
 
-  // Delete a comment by id
-  const handleDelete = (commentId) => {
-    const updatedComments = comments.filter(
-      (comment) => comment.id !== commentId
-    );
-    setComments(updatedComments);
+  // Delete a comment
+  const handleDelete = async (commentId) => {
+    try {
+      await deleteComment(commentId);
+      const updatedComments = comments.filter(
+        (comment) => comment._id !== commentId
+      );
+      setComments(updatedComments);
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to delete comment");
+    }
   };
 
   // Start editing a comment
   const handleStartEdit = (comment) => {
-    setEditingId(comment.id);
+    setEditingId(comment._id);
     setEditText(comment.text);
   };
 
   // Save edited comment
-  const handleSaveEdit = (commentId) => {
+  const handleSaveEdit = async (commentId) => {
     if (editText.trim() === "") {
       return;
     }
 
-    const updatedComments = comments.map((comment) => {
-      if (comment.id === commentId) {
-        return { ...comment, text: editText };
-      }
-      return comment;
-    });
-
-    setComments(updatedComments);
-    setEditingId(null);
-    setEditText("");
+    try {
+      const updated = await updateComment(commentId, editText);
+      const updatedComments = comments.map((comment) => {
+        if (comment._id === commentId) {
+          return updated;
+        }
+        return comment;
+      });
+      setComments(updatedComments);
+      setEditingId(null);
+      setEditText("");
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to edit comment");
+    }
   };
 
   // Cancel editing
@@ -81,7 +107,9 @@ function Comments() {
         <input
           type="text"
           className="comment-input"
-          placeholder="Add a comment..."
+          placeholder={
+            loggedInUser ? "Add a comment..." : "Login to add a comment"
+          }
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
         />
@@ -96,8 +124,8 @@ function Comments() {
           <p className="no-comments">No comments yet.</p>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id} className="comment-item">
-              {editingId === comment.id ? (
+            <div key={comment._id} className="comment-item">
+              {editingId === comment._id ? (
                 <div className="edit-comment">
                   <input
                     type="text"
@@ -107,7 +135,7 @@ function Comments() {
                   />
                   <button
                     className="comment-btn"
-                    onClick={() => handleSaveEdit(comment.id)}
+                    onClick={() => handleSaveEdit(comment._id)}
                   >
                     Save
                   </button>
@@ -122,20 +150,24 @@ function Comments() {
                 <>
                   <p className="comment-username">{comment.username}</p>
                   <p className="comment-text">{comment.text}</p>
-                  <div className="comment-actions">
-                    <button
-                      className="comment-btn"
-                      onClick={() => handleStartEdit(comment)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="comment-btn delete-btn"
-                      onClick={() => handleDelete(comment.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  {/* Show edit/delete only for own comments */}
+                  {loggedInUser &&
+                    String(loggedInUser.userId) === String(comment.userId) && (
+                      <div className="comment-actions">
+                        <button
+                          className="comment-btn"
+                          onClick={() => handleStartEdit(comment)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="comment-btn delete-btn"
+                          onClick={() => handleDelete(comment._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                 </>
               )}
             </div>

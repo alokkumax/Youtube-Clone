@@ -10,6 +10,10 @@ const commentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+    default: "",
+  },
   text: {
     type: String,
     required: true,

@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getUser } from "../services/auth";
+import { createChannel } from "../services/channels";
 import "../styles/channel.css";
 
 function CreateChannel() {
-  const { channels, setChannels } = useOutletContext();
   const navigate = useNavigate();
   const loggedInUser = getUser();
 
   const [channelName, setChannelName] = useState("");
   const [description, setDescription] = useState("");
   const [bannerUrl, setBannerUrl] = useState("");
+  const [error, setError] = useState("");
 
   // Show message if user is not logged in
   if (!loggedInUser) {
@@ -22,32 +23,33 @@ function CreateChannel() {
     );
   }
 
-  // Create new channel and go to channel page
-  const handleCreate = () => {
+  // Create channel using backend API
+  const handleCreate = async () => {
     if (channelName.trim() === "") {
+      setError("Channel name is required");
       return;
     }
 
-    const newChannel = {
-      id: Date.now().toString(),
-      name: channelName,
-      description: description,
-      banner: bannerUrl || "https://picsum.photos/1200/200?random=99",
-      subscribers: "0",
-    };
+    try {
+      setError("");
+      const newChannel = await createChannel({
+        channelName,
+        description,
+        banner: bannerUrl || "https://picsum.photos/1200/200?random=99",
+      });
 
-    setChannels([...channels, newChannel]);
-    navigate(`/channel/${newChannel.id}`);
+      navigate(`/channel/${newChannel._id}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to create channel");
+    }
   };
 
   return (
     <div className="channel-form-page">
-      <Link to="/" className="back-link">
-        ← Back to Home
-      </Link>
-
       <div className="channel-form-box">
         <h1>Create Channel</h1>
+
+        {error && <p className="auth-error">{error}</p>}
 
         <form className="channel-form">
           <label htmlFor="channelName">Channel Name</label>
@@ -76,7 +78,11 @@ function CreateChannel() {
             onChange={(e) => setBannerUrl(e.target.value)}
           />
 
-          <button type="button" className="channel-form-btn" onClick={handleCreate}>
+          <button
+            type="button"
+            className="channel-form-btn"
+            onClick={handleCreate}
+          >
             Create
           </button>
         </form>

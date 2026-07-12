@@ -1,21 +1,39 @@
-import { useState } from "react";
-import { Link, useNavigate, useParams, useOutletContext } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getUser } from "../services/auth";
+import { getChannelById } from "../services/channels";
+import { createVideo } from "../services/videos";
 import "../styles/channel.css";
 
 function UploadVideo() {
   const { channelId } = useParams();
-  const { channels, uploadedVideos, setUploadedVideos } = useOutletContext();
   const navigate = useNavigate();
   const loggedInUser = getUser();
 
+  const [channel, setChannel] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState("Coding");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const channel = channels.find((item) => item.id === channelId);
+  // Load channel info
+  useEffect(() => {
+    const loadChannel = async () => {
+      try {
+        const data = await getChannelById(channelId);
+        setChannel(data.channel);
+      } catch (err) {
+        setError("Channel not found");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadChannel();
+  }, [channelId]);
 
   if (!loggedInUser) {
     return (
@@ -26,7 +44,15 @@ function UploadVideo() {
     );
   }
 
-  if (!channel) {
+  if (loading) {
+    return (
+      <div className="simple-page">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error || !channel) {
     return (
       <div className="simple-page">
         <h1>Channel not found</h1>
@@ -35,39 +61,37 @@ function UploadVideo() {
     );
   }
 
-  // Add new video to uploaded videos list
-  const handleUpload = () => {
-    if (title.trim() === "") {
+  // Upload video using backend API
+  const handleUpload = async () => {
+    if (title.trim() === "" || videoUrl.trim() === "") {
+      setError("Title and Video URL are required");
       return;
     }
 
-    const newVideo = {
-      id: Date.now().toString(),
-      channelId: channelId,
-      title: title,
-      description: description,
-      category: category,
-      thumbnail: thumbnailUrl || "https://picsum.photos/320/180?random=50",
-      videoUrl: videoUrl,
-      channelName: channel.name,
-      views: "0 views",
-      likes: "0",
-      dislikes: "0",
-    };
+    try {
+      setError("");
+      await createVideo({
+        title,
+        description,
+        category,
+        thumbnailUrl: thumbnailUrl || "https://picsum.photos/320/180?random=50",
+        videoUrl,
+        channelId,
+      });
 
-    setUploadedVideos([...uploadedVideos, newVideo]);
-    navigate(`/channel/${channelId}`);
+      navigate(`/channel/${channelId}`);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to upload video");
+    }
   };
 
   return (
     <div className="channel-form-page">
-      <Link to={`/channel/${channelId}`} className="back-link">
-        ← Back to Channel
-      </Link>
-
       <div className="channel-form-box">
         <h1>Upload Video</h1>
-        <p className="upload-channel-name">Channel: {channel.name}</p>
+        <p className="upload-channel-name">Channel: {channel.channelName}</p>
+
+        {error && <p className="auth-error">{error}</p>}
 
         <form className="channel-form">
           <label htmlFor="title">Title</label>
@@ -93,12 +117,12 @@ function UploadVideo() {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
-            <option value="All">All</option>
             <option value="Music">Music</option>
             <option value="Gaming">Gaming</option>
             <option value="News">News</option>
             <option value="Coding">Coding</option>
             <option value="Sports">Sports</option>
+            <option value="Education">Education</option>
           </select>
 
           <label htmlFor="thumbnailUrl">Thumbnail URL</label>
@@ -114,12 +138,19 @@ function UploadVideo() {
           <input
             type="text"
             id="videoUrl"
-            placeholder="Enter video URL"
+            placeholder="Enter video URL (mp4 link)"
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
           />
+          <p className="upload-hint">
+            Use: /videos/sample1.mp4 or /videos/sample2.mp4 or a YouTube link
+          </p>
 
-          <button type="button" className="channel-form-btn" onClick={handleUpload}>
+          <button
+            type="button"
+            className="channel-form-btn"
+            onClick={handleUpload}
+          >
             Upload
           </button>
         </form>

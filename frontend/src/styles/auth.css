@@ -72,6 +72,20 @@
   text-decoration: underline;
 }
 
+.auth-error {
+  color: #cc0000;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.auth-success {
+  color: #0a7a0a;
+  font-size: 14px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
 /* Mobile */
 @media (max-width: 480px) {
   .auth-box {

@@ -1,19 +1,88 @@
-import { useParams, Link, useOutletContext } from "react-router-dom";
-import { videos } from "../services/videos";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { getUser } from "../services/auth";
+import { getChannelById } from "../services/channels";
+import { updateVideo, deleteVideo } from "../services/videos";
 import VideoCard from "../components/VideoCard";
 import "../styles/channel.css";
 import "../styles/home.css";
 
 function Channel() {
   const { id } = useParams();
-  const { channels, uploadedVideos, setUploadedVideos } = useOutletContext();
   const loggedInUser = getUser();
 
-  // Find channel using id from URL
-  const channel = channels.find((item) => item.id === id);
+  const [channel, setChannel] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [owner, setOwner] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!channel) {
+  // Load channel from backend
+  const loadChannel = async () => {
+    try {
+      setLoading(true);
+      const data = await getChannelById(id);
+      setChannel(data.channel);
+      setVideos(data.videos);
+      setOwner(data.owner);
+    } catch (err) {
+      setError("Channel not found");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadChannel();
+  }, [id]);
+
+  // Edit video title using prompt and API
+  const handleEditVideo = async (video) => {
+    const newTitle = prompt("Enter new video title:", video.title);
+
+    if (newTitle === null || newTitle.trim() === "") {
+      return;
+    }
+
+    try {
+      await updateVideo(video._id, { title: newTitle });
+      loadChannel();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to edit video");
+    }
+  };
+
+  // Delete video using API
+  const handleDeleteVideo = async (videoId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this video?"
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      await deleteVideo(videoId);
+      loadChannel();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to delete video");
+    }
+  };
+
+  // Check if current user owns this channel
+  const isOwner =
+    loggedInUser && owner && String(loggedInUser.userId) === String(owner._id);
+
+  if (loading) {
+    return (
+      <div className="simple-page">
+        <p>Loading channel...</p>
+      </div>
+    );
+  }
+
+  if (error || !channel) {
     return (
       <div className="simple-page">
         <h1>Channel not found</h1>
@@ -22,84 +91,26 @@ function Channel() {
     );
   }
 
-  // Get sample videos that belong to this channel
-  const sampleChannelVideos = videos.filter(
-    (video) => video.channelName === channel.name
-  );
-
-  // Get uploaded videos that belong to this channel
-  const channelUploadedVideos = uploadedVideos.filter(
-    (video) => video.channelId === id
-  );
-
-  // Combine all videos for this channel
-  const allChannelVideos = [...sampleChannelVideos, ...channelUploadedVideos];
-  const totalVideos = allChannelVideos.length;
-
-  // Edit uploaded video title using prompt()
-  const handleEditVideo = (video) => {
-    const newTitle = prompt("Enter new video title:", video.title);
-
-    // If user cancels prompt, do nothing
-    if (newTitle === null) {
-      return;
-    }
-
-    // If empty text, do nothing
-    if (newTitle.trim() === "") {
-      return;
-    }
-
-    const updatedVideos = uploadedVideos.map((item) => {
-      if (item.id === video.id) {
-        return { ...item, title: newTitle };
-      }
-      return item;
-    });
-
-    setUploadedVideos(updatedVideos);
-  };
-
-  // Delete uploaded video from the array
-  const handleDeleteVideo = (videoId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this video?");
-
-    if (!confirmDelete) {
-      return;
-    }
-
-    const updatedVideos = uploadedVideos.filter((item) => item.id !== videoId);
-    setUploadedVideos(updatedVideos);
-  };
-
-  // Check if a video was uploaded by the user (has channelId)
-  const isUploadedVideo = (video) => {
-    return video.channelId !== undefined;
-  };
-
   return (
-    <div className="channel-page">
-      <Link to="/" className="back-link">
-        ← Back to Home
-      </Link>
-
+    <div className="channel-page-inner">
       {/* Channel banner */}
       <img
         className="channel-banner"
-        src={channel.banner}
-        alt={`${channel.name} banner`}
+        src={channel.banner || "https://picsum.photos/1200/200"}
+        alt={`${channel.channelName} banner`}
       />
 
       {/* Channel information */}
       <div className="channel-info">
-        <h1 className="channel-name">{channel.name}</h1>
+        <h1 className="channel-name">{channel.channelName}</h1>
         <p className="channel-description">{channel.description}</p>
         <p className="channel-stats">
-          {channel.subscribers} subscribers · {totalVideos} videos
+          {channel.subscribers} subscribers · {channel.videoCount || videos.length}{" "}
+          videos
         </p>
 
-        {/* Show upload link if user is logged in */}
-        {loggedInUser && (
+        {/* Show upload link if user owns the channel */}
+        {isOwner && (
           <Link to={`/upload-video/${id}`} className="upload-link">
             Upload Video
           </Link>
@@ -109,16 +120,16 @@ function Channel() {
       {/* Videos belonging to this channel */}
       <h2 className="channel-videos-title">Videos</h2>
 
-      {totalVideos === 0 ? (
+      {videos.length === 0 ? (
         <p className="no-channel-videos">No videos on this channel yet.</p>
       ) : (
         <div className="video-grid">
-          {allChannelVideos.map((video) => (
-            <div key={video.id} className="channel-video-item">
+          {videos.map((video) => (
+            <div key={video._id} className="channel-video-item">
               <VideoCard video={video} />
 
-              {/* Edit and Delete only for uploaded videos */}
-              {isUploadedVideo(video) && (
+              {/* Edit and Delete only for channel owner */}
+              {isOwner && (
                 <div className="video-actions">
                   <button
                     className="edit-video-btn"
@@ -128,7 +139,7 @@ function Channel() {
                   </button>
                   <button
                     className="delete-video-btn"
-                    onClick={() => handleDeleteVideo(video.id)}
+                    onClick={() => handleDeleteVideo(video._id)}
                   >
                     Delete
                   </button>

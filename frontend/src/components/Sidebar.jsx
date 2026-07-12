@@ -1,24 +1,66 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { getUser } from "../services/auth";
+import { getMyChannels } from "../services/channels";
 import "../styles/sidebar.css";
 
 function Sidebar() {
   const loggedInUser = getUser();
+  const location = useLocation();
+  const [myChannels, setMyChannels] = useState([]);
+
+  // Load my channels when page changes (so new channels show up)
+  useEffect(() => {
+    const loadMyChannels = async () => {
+      const user = getUser();
+      if (!user) {
+        setMyChannels([]);
+        return;
+      }
+
+      try {
+        const channels = await getMyChannels();
+        setMyChannels(channels);
+      } catch (error) {
+        setMyChannels([]);
+      }
+    };
+
+    loadMyChannels();
+  }, [location.pathname]);
 
   return (
     <aside className="sidebar">
       <Link to="/" className="sidebar-item">
         Home
       </Link>
-      <div className="sidebar-item">Trending</div>
-      <div className="sidebar-item">Subscriptions</div>
-      <div className="sidebar-item">Library</div>
-      <div className="sidebar-item">History</div>
 
-      {/* Show create channel link when user is logged in */}
-      {loggedInUser && (
+      {/* Show user's channels so they can open them again */}
+      {loggedInUser && myChannels.length > 0 && (
+        <>
+          <p className="sidebar-section">My Channels</p>
+          {myChannels.map((channel) => (
+            <Link
+              key={channel._id}
+              to={`/channel/${channel._id}`}
+              className="sidebar-item"
+            >
+              {channel.channelName}
+            </Link>
+          ))}
+        </>
+      )}
+
+      {/* Show Create Channel only if user has no channel yet */}
+      {loggedInUser && myChannels.length === 0 && (
         <Link to="/create-channel" className="sidebar-item">
           Create Channel
+        </Link>
+      )}
+
+      {!loggedInUser && (
+        <Link to="/login" className="sidebar-item">
+          Sign In
         </Link>
       )}
     </aside>

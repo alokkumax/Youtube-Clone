@@ -3,18 +3,22 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  height: 56px;
+  height: 72px;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e5e5;
   position: sticky;
   top: 0;
   z-index: 100;
+  overflow: visible;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .menu-btn {
@@ -23,16 +27,22 @@
   font-size: 24px;
   cursor: pointer;
   padding: 8px;
+  position: relative;
+  z-index: 3;
+  line-height: 1;
 }
 
 .logo {
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .logo-img {
-  height: 40px;
+  height: 56px;
   width: auto;
+  display: block;
 }
 
 .header-center {
@@ -110,7 +120,7 @@
   }
 
   .logo-img {
-    height: 32px;
+    height: 48px;
   }
 
   .welcome-text {
@@ -147,6 +157,6 @@
   }
 
   .logo-img {
-    height: 28px;
+    height: 40px;
   }
 }
